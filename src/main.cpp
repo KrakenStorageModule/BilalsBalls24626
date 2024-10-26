@@ -2,12 +2,21 @@
 #include "lemlib/api.hpp" // IWYU pragma: keep
 
 pros::Motor conveyer(8,pros::v5::MotorGears::blue);
-
 // left motor group
-pros::MotorGroup left_motor_group({9, 10, -19}, pros::MotorGears::blue);
+pros::MotorGroup left_motor_group({-9, 10, -19, 13}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motor_group({1, 2, -12}, pros::MotorGears::blue);
+pros::MotorGroup right_motor_group({-1, 2, 12, 18}, pros::MotorGears::blue);
 
+//pistons
+pros::adi::DigitalOut mogo1('A');
+pros::adi::DigitalOut mogo2('A');
+bool mogoToggle = false;
+
+void mogoFunct(){
+    mogoToggle != mogoToggle;
+    mogo1.set_value(mogoToggle);
+    mogo2.set_value(mogoToggle);
+}
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               &right_motor_group, // right motor group
@@ -144,7 +153,11 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+    chassis.setPose(0,0,0);
+    chassis.moveToPoint(0,10,0);
+
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -173,14 +186,164 @@ void intakeControl(){
 }
 
 void opcontrol() {
+    left_motor_group.set_brake_mode_all(MOTOR_BRAKE_COAST);
+    right_motor_group.set_brake_mode_all(MOTOR_BRAKE_COAST);
+
     // loop forever
     while (true) {
+        intakeControl();
+ if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+    mogoToggle = !mogoToggle;
+    mogo1.set_value(mogoToggle);
+    mogo2.set_value(mogoToggle);
+  }
         // get left y and right x positions
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-        int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+        int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // move the robot
-        chassis.arcade(leftY, rightX);
+        chassis.tank(leftY, rightY);
 		intakeControl();
         // delay to save resources
         pros::delay(25);
